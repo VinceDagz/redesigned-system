@@ -20,9 +20,9 @@ server.listen(PORT, () => {
 
 function createBot () {
     const bot = mineflayer.createBot({
-        host: 'arisxzesmp.aternos.me', // SERVER IP
+        host: 'congratsngger.aternos.me', // SERVER IP
         username: 'WaguriiBot', // BOT NAME
-        port: 31729,  // SERVER PORT
+        port: 14282,  // SERVER PORT
         version: '1.16.5',
     })
 
