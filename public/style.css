@@ -1,0 +1,157 @@
+/* Basic Reset */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A slightly modern, clean font */
+    background: linear-gradient(135deg, #ff007f, #007bff); /* Vibrant anime background: Pink/Blue Neon */
+    color: #fff;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+#container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark, stylish overlay */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(255, 0, 127, 0.8); /* Neon glow effect */
+    border: 3px solid #00ffff; /* Cyber border */
+}
+
+h1 {
+    text-align: center;
+    color: #00ffff;
+    text-shadow: 0 0 10px #ff007f;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #ff007f;
+    border-bottom: 2px solid #00ffff;
+    padding-bottom: 5px;
+    margin-top: 0;
+}
+
+#status {
+    text-align: center;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    border: 1px dashed #ff007f;
+}
+
+.control-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid #ff007f;
+}
+
+input[type="text"] {
+    width: calc(100% - 115px); /* Adjusted width */
+    padding: 10px;
+    margin-right: 10px;
+    border: 2px solid #00ffff;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+button {
+    background-color: #ff007f;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+button:hover {
+    background-color: #00ffff;
+    box-shadow: 0 0 10px #00ffff;
+}
+
+/* Movement Controls (D-Pad style) */
+.movement-control {
+    text-align: center;
+}
+
+.dpad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 300px;
+    margin: 15px auto 0;
+}
+
+.dpad button {
+    width: 100px;
+    margin: 5px;
+}
+
+.dpad .middle-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.dpad .middle-row button {
+    width: 80px;
+}
+
+.stop-btn {
+    background-color: #900;
+    width: 100px !important;
+}
+
+.stop-btn:hover {
+    background-color: #f00;
+    box-shadow: 0 0 10px #f00;
+}
+
+.jump-btn {
+    background-color: #00cc66;
+}
+
+.jump-btn:hover {
+    background-color: #00ff88;
+    box-shadow: 0 0 10px #00ff88;
+}
+
+/* Log Section */
+.log-card {
+    max-height: 350px;
+    overflow-y: hidden; /* Hide the scrollbar for a cleaner look */
+    position: relative;
+    padding-bottom: 5px; /* Space for the fade effect */
+}
+
+#log {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    border: 1px solid #00ffff;
+}
+
+#log li {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9em;
+}
+
+#log li:first-child {
+    color: #ffff00; /* Highlight the newest entry */
+}
