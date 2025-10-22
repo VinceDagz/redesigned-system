@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WaguriiBot Control Panel - Anime Theme</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <div id="container">
+        <h1>✨ WaguriiBot Control Panel ✨</h1>
+        <div id="status">Status: Connecting...</div>
+
+        <div class="control-card">
+            <h2>💬 Chat Control</h2>
+            <input type="text" id="chat-input" placeholder="Type message for bot..." onkeydown="if(event.key === 'Enter') sendChat()"/>
+            <button onclick="sendChat()">Send Chat</button>
+        </div>
+        
+        <div class="control-card movement-control">
+            <h2>🎮 Movement Control (WASD)</h2>
+            <div class="dpad">
+                <button class="control-btn" data-control="forward" data-state="true">⬆️ Forward</button>
+                <div class="middle-row">
+                    <button class="control-btn" data-control="left" data-state="true">⬅️ Left</button>
+                    <button class="control-btn stop-btn" data-control="all" data-state="false">🛑 STOP ALL</button>
+                    <button class="control-btn" data-control="right" data-state="true">➡️ Right</button>
+                </div>
+                <button class="control-btn" data-control="back" data-state="true">⬇️ Back</button>
+                <button class="control-btn jump-btn" data-control="jump" data-state="true">🚀 Jump</button>
+            </div>
+        </div>
+
+        <div class="log-card">
+            <h2>📜 Bot Activity Log</h2>
+            <ul id="log"></ul>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const log = document.getElementById('log');
+        const status = document.getElementById('status');
+
+        socket.on('connect', () => {
+            status.textContent = 'Status: Connected to Server';
+        });
+
+        socket.on('bot_log', (message) => {
+            const li = document.createElement('li');
+            li.textContent = message;
+            log.prepend(li);
+            while (log.children.length > 50) {
+                log.removeChild(log.lastChild);
+            }
+        });
+
+        function sendChat() {
+            const chatInput = document.getElementById('chat-input');
+            const message = chatInput.value.trim();
+            if (message) {
+                socket.emit('send_chat_command', message);
+                chatInput.value = '';
+            }
+        }
+        
+        // Function to send control commands (forward, jump, etc.)
+        function sendControl(control, state) {
+            // For simple ON/OFF controls (forward, back, left, right, jump)
+            if (control === 'all') {
+                // Stop all movement controls
+                ['forward', 'back', 'left', 'right', 'jump'].forEach(c => {
+                    socket.emit('send_control_command', { control: c, state: false });
+                });
+            } else {
+                const stateBool = state === 'true'; // Convert string to boolean
+                socket.emit('send_control_command', { control, state: stateBool });
+                
+                // For 'jump' specifically, turn it off after a short delay for a clean jump
+                if (control === 'jump' && stateBool) {
+                    setTimeout(() => {
+                        socket.emit('send_control_command', { control: 'jump', state: false });
+                    }, 200);
+                }
+            }
+        }
+        
+        // Attach click handlers to all control buttons
+        document.querySelectorAll('.control-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const control = button.getAttribute('data-control');
+                const state = button.getAttribute('data-state');
+                sendControl(control, state);
+            });
+        });
+
+    </script>
+</body>
+</html>
