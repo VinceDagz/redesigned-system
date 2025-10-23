@@ -5,7 +5,7 @@ const socketio = require('socket.io')
 
 // --- CONFIGURATION ---
 const BOT_BASE_NAME = 'KaorukoBot';
-const STARTING_BOT_COUNT = 5; // The number of bots to start with, but not a limit.
+const STARTING_BOT_COUNT = 3; // The number of bots to start with, but not a limit.
 const BOT_SERVER_CONFIG = {
     host: 'arisxze.aternos.me', 
     port: 31729, 
