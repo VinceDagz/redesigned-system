@@ -4,7 +4,7 @@ const http = require('http')
 const socketio = require('socket.io')
 
 // --- CONFIGURATION ---
-const BOT_BASE_NAME = 'KaorukoBot';
+const BOT_BASE_NAME = 'WaguriKaoruko';
 const STARTING_BOT_COUNT = 3; // The number of bots to start with, but not a limit.
 const BOT_SERVER_CONFIG = {
     host: 'arisxze.aternos.me', 
