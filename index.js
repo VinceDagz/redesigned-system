@@ -9,13 +9,13 @@ const STARTING_BOT_COUNT = 3;
 const BOT_SERVER_CONFIG = {
     host: 'arisxze.aternos.me', 
     port: 31729, 
-    // CRITICAL FIX: Removed 'version: 1.16.5'. 
-    // When using ViaRewind, the bot often needs to connect using 
-    // the server's TRUE version (e.g., '1.20.6') for the handshake to work.
-    // Mineflayer will now attempt to autodetect or use its internal default, 
-    // which is often better for Via plugins.
+    // CRITICAL FIX: Explicitly set the target client version for the bot.
+    // If the server is running 1.20.x with ViaRewind/ViaVersion,
+    // this tells Mineflayer to connect using the 1.16.5 protocol.
+    version: '1.16.5', 
+    protocolVersion: 754 // 754 is the official protocol number for 1.16.5
 };
-const INITIAL_STARTUP_DELAY_MS = 3000; // Delay the first bot connection for Aternos stability
+const INITIAL_STARTUP_DELAY_MS = 3000; 
 const PORT = process.env.PORT || 3000;
 // --- END CONFIGURATION ---
 
@@ -52,8 +52,6 @@ function sendBotListUpdate() {
 }
 
 // --- BOT LOGIC FUNCTIONS (Encapsulated) ---
-
-// Function to handle bot creation and manage its state
 function createBot(config) {
     
     // **Aternos Connection Fixes applied here**
@@ -65,18 +63,16 @@ function createBot(config) {
     
     const bot = mineflayer.createBot(fullConfig);
 
-    // State variables for THIS specific bot instance
+    // State variables and anti-idle logic... (rest of the file is unchanged from last fixed version)
     let antiIdleInterval = null; 
     let movementTimeouts = []; 
     let isAntiIdleActive = false;
     
-    // Helper function to clear all movement-related timers
     function clearMovementTimeouts() {
         movementTimeouts.forEach(timer => clearTimeout(timer));
         movementTimeouts = []; 
     }
 
-    // Function to perform anti-idle movement
     function performAntiIdleMovement() {
         if (!bot.setControlState || !bot.look || !isAntiIdleActive) {
             clearMovementTimeouts(); 
@@ -165,7 +161,6 @@ function createBot(config) {
         io.emit('bot_log', chatLog)
     });
     
-    // Logs the reason for kick (e.g., Authentication servers are down)
     bot.on('kicked', (reason) => {
         const reasonString = typeof reason === 'object' ? JSON.stringify(reason) : reason.toString();
         io.emit('bot_log', `[${bot.username}]: ❌ KICKED - ${reasonString}. Initiating name re-roll.`);
@@ -174,7 +169,6 @@ function createBot(config) {
         bannedBotCount++; 
     });
     
-    // Logs any immediate connection errors
     bot.on('error', (err) => {
         io.emit('bot_log', `[${bot.username}]: ❌ ERROR - ${err.message}`);
         console.log(`[${bot.username}]: ERROR - ${err.message}`);
@@ -184,7 +178,6 @@ function createBot(config) {
         const oldUsername = bot.username;
         stopAntiIdle(); 
         
-        // 1. Remove the old bot from the active list
         const index = activeBots.findIndex(b => b.username === oldUsername);
         if (index > -1) {
             activeBots.splice(index, 1);
@@ -192,10 +185,8 @@ function createBot(config) {
         
         io.emit('bot_log', `[${oldUsername}]: Ended (${reason}). Creating replacement bot...`);
 
-        // 2. Create a new bot
         recreateBot(oldUsername);
 
-        // 3. Update the client UI
         sendBotListUpdate();
     });
     // --- END BOT EVENT HANDLERS ---
@@ -208,6 +199,8 @@ function createBot(config) {
     
     return bot;
 }
+// --- END BOT LOGIC FUNCTIONS ---
+
 
 // --- RE-CREATION LOGIC ---
 function recreateBot(oldUsername) {
@@ -220,7 +213,6 @@ function recreateBot(oldUsername) {
         ...BOT_SERVER_CONFIG
     };
 
-    // Wait 5 seconds before attempting to join to avoid immediate connection throttling
     setTimeout(() => {
         const newBotInstance = createBot(newBotConfig);
         activeBots.push(newBotInstance);
@@ -230,7 +222,6 @@ function recreateBot(oldUsername) {
 
 
 // --- INITIAL STARTUP ---
-// Start creating the initial set of bots
 for (let i = 1; i <= STARTING_BOT_COUNT; i++) {
     const username = `${BOT_BASE_NAME}_${globalBotCounter++}`;
     const botConfig = {
@@ -238,16 +229,15 @@ for (let i = 1; i <= STARTING_BOT_COUNT; i++) {
         ...BOT_SERVER_CONFIG
     };
     
-    // **FIX 3: Delay the initial connection**
     setTimeout(() => {
         const botInstance = createBot(botConfig);
         activeBots.push(botInstance);
-    }, INITIAL_STARTUP_DELAY_MS * i); // Stagger the first bots slightly
+    }, INITIAL_STARTUP_DELAY_MS * i); 
 }
 // --- END INITIAL STARTUP ---
 
 
-// --- SOCKET.IO FOR BOT CONTROL (Movement Fixes Included) ---
+// --- SOCKET.IO FOR BOT CONTROL ---
 io.on('connection', (socket) => {
     console.log('A web client connected.')
     
@@ -280,7 +270,7 @@ io.on('connection', (socket) => {
 
         if (control === 'all' && state === false) {
             bot.antiIdle.stop();
-            bot.clearControlStates(); // This ensures ALL movement is stopped
+            bot.clearControlStates(); 
         } else {
             bot.setControlState(control, state)
         }
