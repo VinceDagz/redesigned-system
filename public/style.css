@@ -211,3 +211,20 @@ button:hover {
 
 /* Log Section */
 /* ... (Keep all existing Log Section CSS) ... */
+
+/* Add this to your existing style.css */
+
+/* Style for the new Ban/Kick Summary text */
+#banned-count {
+    font-size: 1.2em;
+    color: #00ffff; /* Cyber Blue */
+    text-shadow: 0 0 5px #ff007f; /* Neon Pink glow */
+    font-weight: bold;
+    text-align: center;
+    padding: 5px 0;
+}
+
+/* Ensure the card title remains visible */
+.control-card h2 {
+    /* Keep existing styles, ensures consistency */
+}
