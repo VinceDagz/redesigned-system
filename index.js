@@ -5,20 +5,23 @@ const socketio = require('socket.io')
 
 // --- CONFIGURATION ---
 const BOT_BASE_NAME = 'WaguriKaoruko';
-const STARTING_BOT_COUNT = 3; // The number of bots to start with, but not a limit.
+const STARTING_BOT_COUNT = 3; 
 const BOT_SERVER_CONFIG = {
     host: 'arisxze.aternos.me', 
     port: 31729, 
-    version: '1.16.5'
+    // CRITICAL FIX: Removed 'version: 1.16.5'. 
+    // When using ViaRewind, the bot often needs to connect using 
+    // the server's TRUE version (e.g., '1.20.6') for the handshake to work.
+    // Mineflayer will now attempt to autodetect or use its internal default, 
+    // which is often better for Via plugins.
 };
+const INITIAL_STARTUP_DELAY_MS = 3000; // Delay the first bot connection for Aternos stability
 const PORT = process.env.PORT || 3000;
 // --- END CONFIGURATION ---
 
 
 // --- GLOBAL STATE ---
-// This counter tracks the next sequential number for bot names (e.g., _4, _5, _6...)
 let globalBotCounter = 1; 
-// NEW: Tracks how many bots have been replaced (banned/kicked)
 let bannedBotCount = 0; 
 const activeBots = [];
 // --- END GLOBAL STATE ---
@@ -44,7 +47,7 @@ function sendBotListUpdate() {
     const botUsernames = activeBots.map(b => b.username);
     io.emit('bot_list', {
         usernames: botUsernames,
-        bannedCount: bannedBotCount // Send the updated ban count
+        bannedCount: bannedBotCount 
     });
 }
 
@@ -52,7 +55,15 @@ function sendBotListUpdate() {
 
 // Function to handle bot creation and manage its state
 function createBot(config) {
-    const bot = mineflayer.createBot(config);
+    
+    // **Aternos Connection Fixes applied here**
+    const fullConfig = {
+        ...config,
+        auth: 'offline', // CRITICAL for Aternos (must be ON in options)
+        keepAlive: true, // Recommended for better stability
+    }
+    
+    const bot = mineflayer.createBot(fullConfig);
 
     // State variables for THIS specific bot instance
     let antiIdleInterval = null; 
@@ -65,7 +76,7 @@ function createBot(config) {
         movementTimeouts = []; 
     }
 
-    // Function to perform anti-idle movement (same as before)
+    // Function to perform anti-idle movement
     function performAntiIdleMovement() {
         if (!bot.setControlState || !bot.look || !isAntiIdleActive) {
             clearMovementTimeouts(); 
@@ -144,7 +155,7 @@ function createBot(config) {
     bot.on('spawn', () => {
         const message = `${bot.username} connected!`
         bot.chat(message)
-        io.emit('bot_log', `[${bot.username}]: Bot spawned and chatted: "${message}"`)
+        io.emit('bot_log', `[${bot.username}]: ✅ Bot spawned and chatted: "${message}"`)
         sendBotListUpdate();
     });
 
@@ -154,20 +165,22 @@ function createBot(config) {
         io.emit('bot_log', chatLog)
     });
     
+    // Logs the reason for kick (e.g., Authentication servers are down)
     bot.on('kicked', (reason) => {
-        io.emit('bot_log', `[${bot.username}]: KICKED - ${reason}. Initiating name re-roll.`);
-        console.log(`[${bot.username}]: KICKED - ${reason}. Initiating name re-roll.`);
+        const reasonString = typeof reason === 'object' ? JSON.stringify(reason) : reason.toString();
+        io.emit('bot_log', `[${bot.username}]: ❌ KICKED - ${reasonString}. Initiating name re-roll.`);
+        console.log(`[${bot.username}]: KICKED - ${reasonString}. Initiating name re-roll.`);
         
-        // When a bot is kicked, we assume it needs replacing
-        bannedBotCount++; // Increment the global counter
+        bannedBotCount++; 
     });
     
+    // Logs any immediate connection errors
     bot.on('error', (err) => {
-        io.emit('bot_log', `[${bot.username}]: ERROR - ${err.message}`);
+        io.emit('bot_log', `[${bot.username}]: ❌ ERROR - ${err.message}`);
         console.log(`[${bot.username}]: ERROR - ${err.message}`);
     });
     
-    bot.on('end', () => {
+    bot.on('end', (reason) => {
         const oldUsername = bot.username;
         stopAntiIdle(); 
         
@@ -177,9 +190,9 @@ function createBot(config) {
             activeBots.splice(index, 1);
         }
         
-        io.emit('bot_log', `[${oldUsername}]: Ended. Creating replacement bot...`);
+        io.emit('bot_log', `[${oldUsername}]: Ended (${reason}). Creating replacement bot...`);
 
-        // 2. Immediately create a new bot with the next available number
+        // 2. Create a new bot
         recreateBot(oldUsername);
 
         // 3. Update the client UI
@@ -198,7 +211,6 @@ function createBot(config) {
 
 // --- RE-CREATION LOGIC ---
 function recreateBot(oldUsername) {
-    // There is no limit here; it will always increment and create a new bot.
     const newUsername = `${BOT_BASE_NAME}_${globalBotCounter++}`; 
     
     io.emit('bot_log', `[RE-ROLL]: ${oldUsername} is replaced by ${newUsername}. Attempting join in 5s.`);
@@ -225,16 +237,21 @@ for (let i = 1; i <= STARTING_BOT_COUNT; i++) {
         username: username, 
         ...BOT_SERVER_CONFIG
     };
-    const botInstance = createBot(botConfig);
-    activeBots.push(botInstance);
+    
+    // **FIX 3: Delay the initial connection**
+    setTimeout(() => {
+        const botInstance = createBot(botConfig);
+        activeBots.push(botInstance);
+    }, INITIAL_STARTUP_DELAY_MS * i); // Stagger the first bots slightly
 }
+// --- END INITIAL STARTUP ---
 
 
-// --- SOCKET.IO FOR BOT CONTROL ---
+// --- SOCKET.IO FOR BOT CONTROL (Movement Fixes Included) ---
 io.on('connection', (socket) => {
     console.log('A web client connected.')
     
-    sendBotListUpdate(); // Send the initial list and counter immediately upon client connection
+    sendBotListUpdate(); 
     io.emit('bot_log', 'Web client connected. Bot list and ban count sent.');
 
     // LISTENER 1: CHAT COMMANDS
@@ -263,9 +280,11 @@ io.on('connection', (socket) => {
 
         if (control === 'all' && state === false) {
             bot.antiIdle.stop();
+            bot.clearControlStates(); // This ensures ALL movement is stopped
+        } else {
+            bot.setControlState(control, state)
         }
         
-        bot.setControlState(control, state)
         io.emit('bot_log', `[${bot.username}]: Control executed: ${control} set to ${state}`)
     })
     
