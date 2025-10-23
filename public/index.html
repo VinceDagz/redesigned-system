@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WaguriiBot Control Panel - Anime Theme</title>
+    <title>Multi-Bot Control Panel</title>
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
     <div id="container">
-        <h1>✨ WaguriiBot Control Panel ✨</h1>
+        <h1>✨ Multi-Bot Control Panel ✨</h1>
         <div id="status">Status: Connecting...</div>
-
+        
+        <div class="control-card">
+            <h2>🚨 Ban/Kick Summary</h2>
+            <p id="banned-count" style="font-size: 1.2em; color: #ff007f; font-weight: bold;">Bots Re-Rolled (Banned/Kicked): 0</p>
+        </div>
+        <div class="control-card">
+            <h2>🤖 Select Active Bot</h2>
+            <select id="bot-selector" onchange="updateUIForBot()">
+                <option value="">Loading Bots...</option> 
+            </select>
+        </div>
         <div class="control-card">
             <h2>💬 Chat Control</h2>
             <input type="text" id="chat-input" placeholder="Type message for bot..." onkeydown="if(event.key === 'Enter') sendChat()"/>
@@ -31,7 +41,7 @@
             </div>
             
             <button id="anti-idle-btn" class="anti-idle-btn" onclick="toggleAntiIdle()">🤖 Anti-Idle: OFF</button>
-            </div>
+        </div>
 
         <div class="log-card">
             <h2>📜 Bot Activity Log</h2>
@@ -45,7 +55,47 @@
         const log = document.getElementById('log');
         const status = document.getElementById('status');
         const antiIdleBtn = document.getElementById('anti-idle-btn');
-        let antiIdleState = false;
+        const botSelector = document.getElementById('bot-selector');
+        const bannedCountDisplay = document.getElementById('banned-count'); // NEW element reference
+
+        let antiIdleState = {}; 
+
+        const getSelectedBot = () => botSelector.value;
+        const getAntiIdleState = (username) => antiIdleState[username] || false;
+
+        // --- UI & State Management ---
+
+        function updateUIForBot() {
+            const username = getSelectedBot();
+            const isAntiIdleActive = getAntiIdleState(username);
+            
+            antiIdleBtn.textContent = `🤖 Anti-Idle (${username}): ${isAntiIdleActive ? 'ON' : 'OFF'}`;
+            antiIdleBtn.classList.toggle('active', isAntiIdleActive);
+            antiIdleBtn.disabled = false;
+        }
+
+        // Updated socket listener to handle object data (usernames + bannedCount)
+        socket.on('bot_list', (data) => {
+            const usernames = data.usernames || [];
+            const bannedCount = data.bannedCount || 0;
+            
+            // Update the banned count display
+            bannedCountDisplay.textContent = `Bots Re-Rolled (Banned/Kicked): ${bannedCount}`;
+            
+            // Update the bot selector list
+            botSelector.innerHTML = '';
+            if (usernames.length === 0) {
+                botSelector.innerHTML = '<option value="">No Bots Connected</option>';
+            }
+            
+            usernames.forEach(username => {
+                const option = document.createElement('option');
+                option.value = username;
+                option.textContent = username;
+                botSelector.appendChild(option);
+            });
+            updateUIForBot();
+        });
 
         socket.on('connect', () => {
             status.textContent = 'Status: Connected to Server';
@@ -59,58 +109,56 @@
                 log.removeChild(log.lastChild);
             }
             
-            // Update button state based on log message
+            const match = message.match(/^\[([^\]]+)\]/);
+            if (!match) return;
+            
+            const username = match[1];
+
             if (message.includes('Anti-Idle feature STARTED')) {
-                antiIdleState = true;
-                antiIdleBtn.textContent = '🤖 Anti-Idle: ON';
-                antiIdleBtn.classList.add('active');
+                antiIdleState[username] = true;
             } else if (message.includes('Anti-Idle feature STOPPED')) {
-                antiIdleState = false;
-                antiIdleBtn.textContent = '🤖 Anti-Idle: OFF';
-                antiIdleBtn.classList.remove('active');
+                antiIdleState[username] = false;
+            }
+            
+            if (username === getSelectedBot()) {
+                updateUIForBot();
             }
         });
+
+        // --- Command Functions (remain the same) ---
 
         function sendChat() {
             const chatInput = document.getElementById('chat-input');
             const message = chatInput.value.trim();
-            if (message) {
-                socket.emit('send_chat_command', message);
+            const username = getSelectedBot();
+
+            if (message && username) {
+                socket.emit('send_chat_command', { username, message });
                 chatInput.value = '';
             }
         }
         
-        // Function to send control commands (forward, jump, etc.)
         function sendControl(control, state) {
-            // For simple ON/OFF controls (forward, back, left, right, jump)
-            if (control === 'all') {
-                // Stop all movement controls
-                ['forward', 'back', 'left', 'right', 'jump'].forEach(c => {
-                    socket.emit('send_control_command', { control: c, state: false });
-                });
-            } else {
-                const stateBool = state === 'true'; // Convert string to boolean
-                socket.emit('send_control_command', { control, state: stateBool });
-                
-                // For 'jump' specifically, turn it off after a short delay for a clean jump
-                if (control === 'jump' && stateBool) {
-                    setTimeout(() => {
-                        socket.emit('send_control_command', { control: 'jump', state: false });
-                    }, 200);
-                }
+            const username = getSelectedBot();
+            if (!username) return;
+
+            socket.emit('send_control_command', { username, control, state: state === 'true' });
+            
+            if (control === 'jump' && state === 'true') {
+                setTimeout(() => {
+                    socket.emit('send_control_command', { username, control: 'jump', state: false });
+                }, 200);
             }
         }
         
-        // NEW: Function to toggle Anti-Idle
         function toggleAntiIdle() {
-            // Send the opposite state to the server
-            const command = antiIdleState ? 'stop' : 'start';
-            socket.emit('anti_idle_command', command);
-            // The antiIdleState and button text/class will be updated by the 'bot_log' listener
-            // to ensure it reflects the actual state on the server.
+            const username = getSelectedBot();
+            if (!username) return;
+            
+            const command = getAntiIdleState(username) ? 'stop' : 'start';
+            socket.emit('anti_idle_command', { username, state: command });
         }
         
-        // Attach click handlers to all control buttons
         document.querySelectorAll('.control-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const control = button.getAttribute('data-control');
