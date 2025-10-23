@@ -7,13 +7,14 @@ const socketio = require('socket.io')
 const BOT_BASE_NAME = 'WaguriKaoruko';
 const STARTING_BOT_COUNT = 3; 
 const BOT_SERVER_CONFIG = {
-    host: 'arisxze.aternos.me', 
+    host: '185.107.192.98', 
     port: 31729, 
-    // CRITICAL FIX: Explicitly set the target client version for the bot.
-    // If the server is running 1.20.x with ViaRewind/ViaVersion,
-    // this tells Mineflayer to connect using the 1.16.5 protocol.
     version: '1.16.5', 
-    protocolVersion: 754 // 754 is the official protocol number for 1.16.5
+    protocolVersion: 754, 
+    // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
+    // This forces the bot to announce the full hostname in the handshake packet, 
+    // which is essential for proxy systems like ViaVersion/Aternos.
+    serverHost: 'arisxze.aternos.me' 
 };
 const INITIAL_STARTUP_DELAY_MS = 3000; 
 const PORT = process.env.PORT || 3000;
@@ -54,16 +55,14 @@ function sendBotListUpdate() {
 // --- BOT LOGIC FUNCTIONS (Encapsulated) ---
 function createBot(config) {
     
-    // **Aternos Connection Fixes applied here**
     const fullConfig = {
         ...config,
-        auth: 'offline', // CRITICAL for Aternos (must be ON in options)
-        keepAlive: true, // Recommended for better stability
+        auth: 'offline', 
+        keepAlive: true, 
     }
     
     const bot = mineflayer.createBot(fullConfig);
 
-    // State variables and anti-idle logic... (rest of the file is unchanged from last fixed version)
     let antiIdleInterval = null; 
     let movementTimeouts = []; 
     let isAntiIdleActive = false;
@@ -169,9 +168,10 @@ function createBot(config) {
         bannedBotCount++; 
     });
     
+    // This logs the ECONNRESET error!
     bot.on('error', (err) => {
         io.emit('bot_log', `[${bot.username}]: ❌ ERROR - ${err.message}`);
-        console.log(`[${bot.username}]: ERROR - ${err.message}`);
+        console.error(`[${bot.username}]: ERROR - ${err.message}`);
     });
     
     bot.on('end', (reason) => {
@@ -239,6 +239,7 @@ for (let i = 1; i <= STARTING_BOT_COUNT; i++) {
 
 // --- SOCKET.IO FOR BOT CONTROL ---
 io.on('connection', (socket) => {
+    // ... (rest of the socket control logic is unchanged)
     console.log('A web client connected.')
     
     sendBotListUpdate(); 
