@@ -29,7 +29,9 @@
                 <button class="control-btn" data-control="back" data-state="true">⬇️ Back</button>
                 <button class="control-btn jump-btn" data-control="jump" data-state="true">🚀 Jump</button>
             </div>
-        </div>
+            
+            <button id="anti-idle-btn" class="anti-idle-btn" onclick="toggleAntiIdle()">🤖 Anti-Idle: OFF</button>
+            </div>
 
         <div class="log-card">
             <h2>📜 Bot Activity Log</h2>
@@ -42,6 +44,8 @@
         const socket = io();
         const log = document.getElementById('log');
         const status = document.getElementById('status');
+        const antiIdleBtn = document.getElementById('anti-idle-btn');
+        let antiIdleState = false;
 
         socket.on('connect', () => {
             status.textContent = 'Status: Connected to Server';
@@ -53,6 +57,17 @@
             log.prepend(li);
             while (log.children.length > 50) {
                 log.removeChild(log.lastChild);
+            }
+            
+            // Update button state based on log message
+            if (message.includes('Anti-Idle feature STARTED')) {
+                antiIdleState = true;
+                antiIdleBtn.textContent = '🤖 Anti-Idle: ON';
+                antiIdleBtn.classList.add('active');
+            } else if (message.includes('Anti-Idle feature STOPPED')) {
+                antiIdleState = false;
+                antiIdleBtn.textContent = '🤖 Anti-Idle: OFF';
+                antiIdleBtn.classList.remove('active');
             }
         });
 
@@ -84,6 +99,15 @@
                     }, 200);
                 }
             }
+        }
+        
+        // NEW: Function to toggle Anti-Idle
+        function toggleAntiIdle() {
+            // Send the opposite state to the server
+            const command = antiIdleState ? 'stop' : 'start';
+            socket.emit('anti_idle_command', command);
+            // The antiIdleState and button text/class will be updated by the 'bot_log' listener
+            // to ensure it reflects the actual state on the server.
         }
         
         // Attach click handlers to all control buttons
