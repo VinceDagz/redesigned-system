@@ -24,8 +24,8 @@ Every heartbeat in its code hums like a theme song before the final battle.
 ---
 
 <div align="center">
-<img src="https://static.wikia.nocookie.net/umamusume/images/e/e0/Tokai_Teio_Anime.png" width="350px" alt="Tokai Teio">
-<p><b>Tokai Teio</b> — The Spirit of Speed. Her unstoppable momentum fuels the rhythm of <b>AriSxZeBot’s</b> uptime.</p>
+<img src="https://w.wallhaven.cc/full/rd/wallhaven-rdzkdj.jpg" width="380px" alt="Tokai Teio">
+<p><b>Tokai Teio</b> — The Spirit of Speed. Her unstoppable energy fuels <b>AriSxZeBot’s</b> relentless uptime, racing through every server restart with unshakable spirit.</p>
 </div>
 
 ---
@@ -44,8 +44,8 @@ Every heartbeat in its code hums like a theme song before the final battle.
 ---
 
 <div align="center">
-<img src="https://static.wikia.nocookie.net/bluearchive/images/d/d0/Waguri_Kaoruko_Character.png" width="350px" alt="Kaoruko Waguri">
-<p><b>Kaoruko Waguri</b> — The Mind of Strategy. Her calm precision mirrors the flawless loops of <b>AriSxZeBot’s</b> logic.</p>
+<img src="https://i0.wp.com/anitrendz.net/news/wp-content/uploads/2025/06/The-Fragrant-Flower-Blooms-with-Dignity-main-pv-screenshot.png" width="380px" alt="Kaoruko Waguri">
+<p><b>Kaoruko Waguri</b> — The Mind of Grace. Her quiet focus mirrors the flawless logic of <b>AriSxZeBot</b>, harmonizing elegance with unyielding precision.</p>
 </div>
 
 ---
@@ -53,10 +53,10 @@ Every heartbeat in its code hums like a theme song before the final battle.
 ## ⚙️ **Abilities**
 
 🌌 **Eternal Presence Mode** — Keeps Minecraft Aternos worlds alive 24/7.  
-💀 **AFK-Breaker Instinct** — Moves, chats, and stays active like a true player.  
-⚡ **Auto-Reconnect Reflex** — Instantly returns after disconnection.  
-💬 **Custom Persona** — Replies with confidence and flair — *the Arisxze way*.  
-🔥 **Optimized Battle Core** — Built on Node.js and Mineflayer for pure stability.  
+💀 **AFK-Breaker Instinct** — Moves, chats, and stays active like a living player.  
+⚡ **Auto-Reconnect Reflex** — Rejoins instantly after disconnection.  
+💬 **Custom Persona** — Responds with the confidence and elegance of **Arisxze’s** legacy.  
+🔥 **Optimized Battle Core** — Powered by Node.js and Mineflayer for legendary uptime.  
 
 > *Every tick, every move — a pulse of life in an empty world.*
 
@@ -67,8 +67,9 @@ Every heartbeat in its code hums like a theme song before the final battle.
 > 💫 *“I don’t code bots. I breathe life into servers.”*  
 > — **Arisxze**
 
-**Arisxze** is the mind and soul behind AriSxZeBot — the developer who turned uptime into art.  
-Every log message, every reconnection, every spark of energy carries the **ARISXZE signature**.
+**Arisxze** is the creator, coder, and storyteller behind **AriSxZeBot** —  
+turning uptime into art, and code into emotion.  
+Every log message is a heartbeat; every reconnection is resolve.
 
 ---
 
@@ -77,8 +78,8 @@ Every log message, every reconnection, every spark of energy carries the **ARISX
 > *“As long as the sun sets and players vanish, I’ll remain.”*  
 > — **AriSxZeBot**
 
-AriSxZeBot stands watch over your Minecraft world —  
-the silent guardian who never sleeps, the anime protagonist who never surrenders.  
+AriSxZeBot stands eternal — a digital guardian,  
+an anime soul in a server’s heart, built to defy sleep and silence.
 
 ---
 
