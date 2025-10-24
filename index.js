@@ -7,7 +7,7 @@ const socketio = require('socket.io')
 const BOT_BASE_NAME = 'WaguriKaoruko';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
-    host: '185.107.192.98', 
+    host: '185.107.192.47', 
     port: 31729, 
     version: '1.16.5', 
     protocolVersion: 754, 
