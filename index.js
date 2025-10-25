@@ -7,14 +7,14 @@ const socketio = require('socket.io')
 const BOT_BASE_NAME = 'WaguriKaoruko';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
-    host: '185.107.192.47', 
+    host: 'play.arisxse.qzz.io', 
     port: 31729, 
     version: '1.16.5', 
     protocolVersion: 754, 
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
     // This forces the bot to announce the full hostname in the handshake packet, 
     // which is essential for proxy systems like ViaVersion/Aternos.
-    serverHost: 'arisxze.aternos.me' 
+    serverHost: 'play.arisxse.qzz.io' 
 };
 const INITIAL_STARTUP_DELAY_MS = 3000; 
 const PORT = process.env.PORT || 3000;
