@@ -1,230 +1,308 @@
-/* Basic Reset */
+/* === Arisxze Multi-Bot Control Panel (Anime Themed) === */
+
+/* --- Reset & Layout --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    background: linear-gradient(135deg, #ff007f, #007bff); /* Vibrant anime background: Pink/Blue Neon */
-    color: #fff;
-    padding: 20px;
-    min-height: 100vh;
-    box-sizing: border-box;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+
+  /* Gradient + animated background */
+  background: linear-gradient(135deg, #ff00aa, #0055ff);
+  background-size: 400% 400%;
+  animation: bgFlow 15s ease infinite;
+  position: relative;
 }
 
+/* --- Floating Sakura Petals --- */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(255,192,203,0.5) 2px, transparent 2px),
+    radial-gradient(circle at 90% 20%, rgba(255,182,193,0.4) 3px, transparent 3px),
+    radial-gradient(circle at 40% 80%, rgba(255,182,193,0.5) 2px, transparent 2px);
+  background-size: 300px 300px;
+  animation: petalDrift 20s linear infinite;
+  z-index: 0;
+}
+
+/* --- Subtle Neon Grid Overlay --- */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: 
+    linear-gradient(transparent 95%, rgba(255,255,255,0.05) 96%),
+    linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.05) 96%);
+  background-size: 50px 50px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* --- Container --- */
 #container {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: rgba(0, 0, 0, 0.85); /* Dark, stylish overlay */
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(255, 0, 127, 0.8); /* Neon glow effect */
-    border: 3px solid #00ffff; /* Cyber border */
+  width: 100%;
+  max-width: 850px;
+  background: rgba(0, 0, 0, 0.85);
+  border: 2px solid #00ffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 0 30px #ff00aa;
+  animation: floatGlow 6s ease-in-out infinite;
+  z-index: 1;
 }
 
-h1 {
-    text-align: center;
-    color: #00ffff;
-    text-shadow: 0 0 10px #ff007f;
-    font-size: 2.5em;
-    margin-bottom: 20px;
+/* --- Header --- */
+.header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.header h1 {
+  font-size: 2.4em;
+  color: #00ffff;
+  text-shadow: 0 0 10px #ff00ff, 0 0 25px #00ffff;
+  animation: titleFlicker 2s infinite alternate;
+}
+
+.subtitle {
+  color: #ccc;
+  font-size: 1em;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+/* --- Status --- */
+#status {
+  text-align: center;
+  margin: 15px auto;
+  padding: 10px;
+  border: 1px dashed #ff00ff;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  width: 100%;
+}
+
+/* --- Control Cards --- */
+.control-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid #ff00ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.8s ease;
 }
 
 h2 {
-    color: #ff007f;
-    border-bottom: 2px solid #00ffff;
-    padding-bottom: 5px;
-    margin-top: 0;
+  color: #ff00ff;
+  border-bottom: 1px solid #00ffff;
+  margin-bottom: 10px;
+  padding-bottom: 5px;
 }
 
-#status {
-    text-align: center;
-    padding: 10px;
-    margin-bottom: 20px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    border: 1px dashed #ff007f;
+/* --- Inputs & Buttons --- */
+.chat-row {
+  display: flex;
+  gap: 10px;
 }
 
-.control-card {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    border: 1px solid #ff007f;
-}
-
-input[type="text"] {
-    width: calc(100% - 115px);
-    padding: 10px;
-    margin-right: 10px;
-    border: 2px solid #00ffff;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    border-radius: 5px;
-    box-sizing: border-box;
-    font-size: 1em;
+input[type="text"],
+select {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #00ffff;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
 }
 
 button {
-    background-color: #ff007f;
-    color: #fff;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s, box-shadow 0.3s;
+  background: #ff00aa;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #00ffff;
-    box-shadow: 0 0 10px #00ffff;
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 10px #00ffff;
 }
 
-/* Viewer Link Styling */
-.viewer-card {
-    text-align: center;
-}
-
-.viewer-card h2 {
-    border-bottom: none;
-}
-
-.viewer-card button {
-    background-color: #00ccff; /* A bright, contrasting color */
-    padding: 12px 25px;
-    font-size: 1.1em;
-    margin-bottom: 5px;
-}
-
-.viewer-card button:hover {
-    background-color: #0088ff;
-    box-shadow: 0 0 15px #0088ff;
-}
-
-.viewer-card p {
-    font-size: 0.8em;
-    color: #aaa;
-}
-
-/* Movement Controls (D-Pad style) */
+/* --- Movement Controls --- */
 .movement-control {
-    text-align: center;
+  text-align: center;
 }
 
 .dpad {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 300px;
-    margin: 15px auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 15px;
+}
+
+.middle-row {
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
 }
 
 .dpad button {
-    width: 100px;
-    margin: 5px;
-}
-
-.dpad .middle-row {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.dpad .middle-row button {
-    width: 80px;
+  margin: 5px;
+  width: 100px;
 }
 
 .stop-btn {
-    background-color: #900;
-    width: 100px !important;
+  background: #a00;
 }
 
 .stop-btn:hover {
-    background-color: #f00;
-    box-shadow: 0 0 10px #f00;
+  background: #f00;
+  box-shadow: 0 0 15px #f00;
 }
 
 .jump-btn {
-    background-color: #00cc66;
+  background: #00cc66;
 }
 
 .jump-btn:hover {
-    background-color: #00ff88;
-    box-shadow: 0 0 10px #00ff88;
+  background: #00ff88;
 }
 
-/* Log Section */
-.log-card {
-    max-height: 350px;
-    overflow-y: hidden;
-    position: relative;
-    padding-bottom: 5px;
-}
-
-#log {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-    height: 100%;
-    overflow-y: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 5px;
-    border: 1px solid #00ffff;
-}
-
-#log li {
-    padding: 8px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.9em;
-}
-
-#log li:first-child {
-    color: #ffff00;
-}
-
-/* ... (Keep all existing CSS) ... */
-
-/* NEW: Anti-Idle Button Style */
+/* --- Anti-Idle Button --- */
 .anti-idle-btn {
-    margin-top: 15px;
-    width: 100%;
-    background-color: #7b00ff; /* Purple for a distinct look */
-}
-
-.anti-idle-btn:hover {
-    background-color: #a500ff;
-    box-shadow: 0 0 10px #a500ff;
+  margin-top: 15px;
+  width: 100%;
+  background: #7b00ff;
+  font-weight: 600;
 }
 
 .anti-idle-btn.active {
-    background-color: #00ffff; /* Cyber Blue when active */
-    color: #000;
-    font-weight: bold;
-    box-shadow: 0 0 15px #00ffff, 0 0 5px #ff007f inset; /* Neon glow */
+  background: #00ffff;
+  color: #000;
+  box-shadow: 0 0 20px #00ffff, 0 0 10px #ff00ff inset;
 }
 
 .anti-idle-btn.active:hover {
-    background-color: #ff007f; /* Pink on hover when active */
-    color: #fff;
-    box-shadow: 0 0 15px #ff007f, 0 0 5px #00ffff inset;
+  background: #ff00ff;
+  color: #fff;
 }
 
-/* Log Section */
-/* ... (Keep all existing Log Section CSS) ... */
+/* --- Log Section --- */
+.log-card {
+  max-height: 350px;
+  overflow: hidden;
+  position: relative;
+}
 
-/* Add this to your existing style.css */
+#log {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+  border: 1px solid #00ffff;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  height: 300px;
+  overflow-y: auto;
+}
 
-/* Style for the new Ban/Kick Summary text */
+#log li {
+  padding: 8px;
+  font-family: 'Courier New', monospace;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#log li:first-child {
+  color: #ffff00;
+}
+
+/* --- Ban Count --- */
 #banned-count {
-    font-size: 1.2em;
-    color: #00ffff; /* Cyber Blue */
-    text-shadow: 0 0 5px #ff007f; /* Neon Pink glow */
-    font-weight: bold;
-    text-align: center;
-    padding: 5px 0;
+  text-align: center;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 10px #ff00ff;
 }
 
-/* Ensure the card title remains visible */
-.control-card h2 {
-    /* Keep existing styles, ensures consistency */
+/* --- Footer --- */
+footer {
+  text-align: center;
+  font-size: 0.9em;
+  color: #aaa;
+  margin-top: 20px;
+}
+
+.brand {
+  color: #ff00ff;
+  font-weight: bold;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+/* --- Animations --- */
+@keyframes floatGlow {
+  0%,100% { transform: translateY(0); box-shadow: 0 0 25px #ff00aa; }
+  50% { transform: translateY(-5px); box-shadow: 0 0 35px #00ffff; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes titleFlicker {
+  0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.5; }
+}
+
+@keyframes bgFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes petalDrift {
+  from { background-position: 0 0; }
+  to { background-position: -300px 600px; }
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+
+  #container {
+    padding: 20px;
+  }
+
+  .dpad .middle-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .chat-row {
+    flex-direction: column;
+  }
+
+  input[type="text"], button {
+    width: 100%;
+  }
 }
