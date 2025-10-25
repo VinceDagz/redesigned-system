@@ -1,172 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Bot Control Panel</title>
-    <link rel="stylesheet" href="style.css"> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Arisxze Multi-Bot Control Panel</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="container">
-        <h1>✨ Multi-Bot Control Panel ✨</h1>
-        <div id="status">Status: Connecting...</div>
-        
-        <div class="control-card">
-            <h2>🚨 Ban/Kick Summary</h2>
-            <p id="banned-count" style="font-size: 1.2em; color: #ff007f; font-weight: bold;">Bots Re-Rolled (Banned/Kicked): 0</p>
+  <div id="container">
+    <header class="header">
+      <h1>🌸 Kaoruko Bot Control Panel 🌸</h1>
+      <p class="subtitle">Control your bots with elegance and precision ⚙️</p>
+    </header>
+
+    <div id="status">Status: Connecting...</div>
+
+    <section class="control-card">
+      <h2>🚨 Ban/Kick Summary</h2>
+      <p id="banned-count">Bots Re-Rolled (Banned/Kicked): 0</p>
+    </section>
+
+    <section class="control-card">
+      <h2>🤖 Select Active Bot</h2>
+      <select id="bot-selector" onchange="updateUIForBot()">
+        <option value="">Loading Bots...</option>
+      </select>
+    </section>
+
+    <section class="control-card">
+      <h2>💬 Chat Control</h2>
+      <div class="chat-row">
+        <input type="text" id="chat-input" placeholder="Type message for bot..." onkeydown="if(event.key==='Enter') sendChat()"/>
+        <button onclick="sendChat()">Send</button>
+      </div>
+    </section>
+
+    <section class="control-card movement-control">
+      <h2>🎮 Movement Control (WASD)</h2>
+      <div class="dpad">
+        <button class="control-btn" data-control="forward" data-state="true">⬆️ Forward</button>
+        <div class="middle-row">
+          <button class="control-btn" data-control="left" data-state="true">⬅️ Left</button>
+          <button class="control-btn stop-btn" data-control="all" data-state="false">🛑 STOP</button>
+          <button class="control-btn" data-control="right" data-state="true">➡️ Right</button>
         </div>
-        <div class="control-card">
-            <h2>🤖 Select Active Bot</h2>
-            <select id="bot-selector" onchange="updateUIForBot()">
-                <option value="">Loading Bots...</option> 
-            </select>
-        </div>
-        <div class="control-card">
-            <h2>💬 Chat Control</h2>
-            <input type="text" id="chat-input" placeholder="Type message for bot..." onkeydown="if(event.key === 'Enter') sendChat()"/>
-            <button onclick="sendChat()">Send Chat</button>
-        </div>
-        
-        <div class="control-card movement-control">
-            <h2>🎮 Movement Control (WASD)</h2>
-            <div class="dpad">
-                <button class="control-btn" data-control="forward" data-state="true">⬆️ Forward</button>
-                <div class="middle-row">
-                    <button class="control-btn" data-control="left" data-state="true">⬅️ Left</button>
-                    <button class="control-btn stop-btn" data-control="all" data-state="false">🛑 STOP ALL</button>
-                    <button class="control-btn" data-control="right" data-state="true">➡️ Right</button>
-                </div>
-                <button class="control-btn" data-control="back" data-state="true">⬇️ Back</button>
-                <button class="control-btn jump-btn" data-control="jump" data-state="true">🚀 Jump</button>
-            </div>
-            
-            <button id="anti-idle-btn" class="anti-idle-btn" onclick="toggleAntiIdle()">🤖 Anti-Idle: OFF</button>
-        </div>
+        <button class="control-btn" data-control="back" data-state="true">⬇️ Back</button>
+        <button class="control-btn jump-btn" data-control="jump" data-state="true">🚀 Jump</button>
+      </div>
 
-        <div class="log-card">
-            <h2>📜 Bot Activity Log</h2>
-            <ul id="log"></ul>
-        </div>
-    </div>
+      <button id="anti-idle-btn" class="anti-idle-btn" onclick="toggleAntiIdle()">🤖 Anti-Idle: OFF</button>
+    </section>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        const log = document.getElementById('log');
-        const status = document.getElementById('status');
-        const antiIdleBtn = document.getElementById('anti-idle-btn');
-        const botSelector = document.getElementById('bot-selector');
-        const bannedCountDisplay = document.getElementById('banned-count'); // NEW element reference
+    <section class="log-card">
+      <h2>📜 Bot Activity Log</h2>
+      <ul id="log"></ul>
+    </section>
 
-        let antiIdleState = {}; 
+    <footer>
+      <p>Made with 💖 by <span class="brand">Arisxze</span></p>
+    </footer>
+  </div>
 
-        const getSelectedBot = () => botSelector.value;
-        const getAntiIdleState = (username) => antiIdleState[username] || false;
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const log = document.getElementById('log');
+    const status = document.getElementById('status');
+    const antiIdleBtn = document.getElementById('anti-idle-btn');
+    const botSelector = document.getElementById('bot-selector');
+    const bannedCountDisplay = document.getElementById('banned-count');
+    let antiIdleState = {};
 
-        // --- UI & State Management ---
+    const getSelectedBot = () => botSelector.value;
+    const getAntiIdleState = (u) => antiIdleState[u] || false;
 
-        function updateUIForBot() {
-            const username = getSelectedBot();
-            const isAntiIdleActive = getAntiIdleState(username);
-            
-            antiIdleBtn.textContent = `🤖 Anti-Idle (${username}): ${isAntiIdleActive ? 'ON' : 'OFF'}`;
-            antiIdleBtn.classList.toggle('active', isAntiIdleActive);
-            antiIdleBtn.disabled = false;
-        }
+    function updateUIForBot() {
+      const username = getSelectedBot();
+      const isOn = getAntiIdleState(username);
+      antiIdleBtn.textContent = `🤖 Anti-Idle (${username}): ${isOn ? 'ON' : 'OFF'}`;
+      antiIdleBtn.classList.toggle('active', isOn);
+      antiIdleBtn.disabled = false;
+    }
 
-        // Updated socket listener to handle object data (usernames + bannedCount)
-        socket.on('bot_list', (data) => {
-            const usernames = data.usernames || [];
-            const bannedCount = data.bannedCount || 0;
-            
-            // Update the banned count display
-            bannedCountDisplay.textContent = `Bots Re-Rolled (Banned/Kicked): ${bannedCount}`;
-            
-            // Update the bot selector list
-            botSelector.innerHTML = '';
-            if (usernames.length === 0) {
-                botSelector.innerHTML = '<option value="">No Bots Connected</option>';
-            }
-            
-            usernames.forEach(username => {
-                const option = document.createElement('option');
-                option.value = username;
-                option.textContent = username;
-                botSelector.appendChild(option);
-            });
-            updateUIForBot();
-        });
+    socket.on('bot_list', (data) => {
+      const usernames = data.usernames || [];
+      const bannedCount = data.bannedCount || 0;
+      bannedCountDisplay.textContent = `Bots Re-Rolled (Banned/Kicked): ${bannedCount}`;
+      botSelector.innerHTML = usernames.length ? '' : '<option value="">No Bots Connected</option>';
+      usernames.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u; opt.textContent = u;
+        botSelector.appendChild(opt);
+      });
+      updateUIForBot();
+    });
 
-        socket.on('connect', () => {
-            status.textContent = 'Status: Connected to Server';
-        });
+    socket.on('connect', () => status.textContent = 'Status: Connected to Server');
+    socket.on('bot_log', (msg) => {
+      const li = document.createElement('li');
+      li.textContent = msg;
+      log.prepend(li);
+      while (log.children.length > 50) log.removeChild(log.lastChild);
+      const m = msg.match(/^\[([^\]]+)\]/);
+      if (!m) return;
+      const username = m[1];
+      if (msg.includes('Anti-Idle feature STARTED')) antiIdleState[username] = true;
+      else if (msg.includes('Anti-Idle feature STOPPED')) antiIdleState[username] = false;
+      if (username === getSelectedBot()) updateUIForBot();
+    });
 
-        socket.on('bot_log', (message) => {
-            const li = document.createElement('li');
-            li.textContent = message;
-            log.prepend(li);
-            while (log.children.length > 50) {
-                log.removeChild(log.lastChild);
-            }
-            
-            const match = message.match(/^\[([^\]]+)\]/);
-            if (!match) return;
-            
-            const username = match[1];
+    function sendChat() {
+      const chat = document.getElementById('chat-input');
+      const message = chat.value.trim();
+      const username = getSelectedBot();
+      if (message && username) {
+        socket.emit('send_chat_command', { username, message });
+        chat.value = '';
+      }
+    }
 
-            if (message.includes('Anti-Idle feature STARTED')) {
-                antiIdleState[username] = true;
-            } else if (message.includes('Anti-Idle feature STOPPED')) {
-                antiIdleState[username] = false;
-            }
-            
-            if (username === getSelectedBot()) {
-                updateUIForBot();
-            }
-        });
+    function sendControl(control, state) {
+      const username = getSelectedBot();
+      if (!username) return;
+      socket.emit('send_control_command', { username, control, state: state === 'true' });
+      if (control === 'jump' && state === 'true')
+        setTimeout(() => socket.emit('send_control_command', { username, control: 'jump', state: false }), 200);
+    }
 
-        // --- Command Functions (remain the same) ---
+    function toggleAntiIdle() {
+      const username = getSelectedBot();
+      if (!username) return;
+      const cmd = getAntiIdleState(username) ? 'stop' : 'start';
+      socket.emit('anti_idle_command', { username, state: cmd });
+    }
 
-        function sendChat() {
-            const chatInput = document.getElementById('chat-input');
-            const message = chatInput.value.trim();
-            const username = getSelectedBot();
-
-            if (message && username) {
-                socket.emit('send_chat_command', { username, message });
-                chatInput.value = '';
-            }
-        }
-        
-        function sendControl(control, state) {
-            const username = getSelectedBot();
-            if (!username) return;
-
-            socket.emit('send_control_command', { username, control, state: state === 'true' });
-            
-            if (control === 'jump' && state === 'true') {
-                setTimeout(() => {
-                    socket.emit('send_control_command', { username, control: 'jump', state: false });
-                }, 200);
-            }
-        }
-        
-        function toggleAntiIdle() {
-            const username = getSelectedBot();
-            if (!username) return;
-            
-            const command = getAntiIdleState(username) ? 'stop' : 'start';
-            socket.emit('anti_idle_command', { username, state: command });
-        }
-        
-        document.querySelectorAll('.control-btn').forEach(button => {
-            button.addEventListener('click', () => {
-                const control = button.getAttribute('data-control');
-                const state = button.getAttribute('data-state');
-                sendControl(control, state);
-            });
-        });
-
-    </script>
+    document.querySelectorAll('.control-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const control = btn.dataset.control;
+        const state = btn.dataset.state;
+        sendControl(control, state);
+      });
+    });
+  </script>
 </body>
 </html>
