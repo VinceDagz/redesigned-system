@@ -9,7 +9,7 @@ const STARTING_BOT_COUNT = 1;
 const BOT_SERVER_CONFIG = {
     host: '15.235.141.245', 
     port: 40055, 
-    version: '1.16.5', 
+    version: '1.21.10', 
     protocolVersion: 754, 
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
     // This forces the bot to announce the full hostname in the handshake packet, 
