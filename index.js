@@ -8,7 +8,7 @@ const BOT_BASE_NAME = 'Arisxze';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
     host: '139.99.123.168', 
-    port: 40013, 
+    port: 40007, 
     version: '1.16.5', 
     protocolVersion: 754, 
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
