@@ -4,17 +4,17 @@ const http = require('http')
 const socketio = require('socket.io')
 
 // --- CONFIGURATION ---
-const BOT_BASE_NAME = 'WaguriKaoruko';
+const BOT_BASE_NAME = 'Arisxze';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
-    host: '15.235.141.245', 
-    port: 40055, 
+    host: '139.99.123.168', 
+    port: 40013, 
     version: '1.16.5', 
     protocolVersion: 754, 
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
     // This forces the bot to announce the full hostname in the handshake packet, 
     // which is essential for proxy systems like ViaVersion/Aternos.
-    serverHost: 'node-my-01.tickhosting.asia' 
+    serverHost: 'node-sg-01.tickhosting.com' 
 };
 const INITIAL_STARTUP_DELAY_MS = 3000; 
 const PORT = process.env.PORT || 3000;
