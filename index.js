@@ -4,11 +4,11 @@ const http = require('http')
 const socketio = require('socket.io')
 
 // --- CONFIGURATION ---
-const BOT_BASE_NAME = 'KwuuKwuu';
+const BOT_BASE_NAME = 'Kurukuwuu';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
-    host: '139.99.123.168', 
-    port: 40015, 
+    host: '15.235.182.152', 
+    port: 34128, 
     version: '1.16.5', 
     protocolVersion: 754, 
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
