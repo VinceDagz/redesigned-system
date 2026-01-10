@@ -14,7 +14,7 @@ const BOT_SERVER_CONFIG = {
     // *** CRITICAL NEW ADDITION FOR ATERNOS/CLOUDS ***
     // This forces the bot to announce the full hostname in the handshake packet, 
     // which is essential for proxy systems like ViaVersion/Aternos.
-    serverHost: 'node-sg-01.tickhosting.com' 
+    serverHost: 'arisxzesmp.progamer.me' 
 };
 const INITIAL_STARTUP_DELAY_MS = 3000; 
 const PORT = process.env.PORT || 3000;
