@@ -7,7 +7,7 @@ const socketio = require('socket.io')
 const BOT_BASE_NAME = 'Kurukuwuu';
 const STARTING_BOT_COUNT = 1; 
 const BOT_SERVER_CONFIG = {
-    host: '139.99.62.85', 
+    host: 'arisxzesmp.progamer.me', 
     port: 34128, 
     version: '1.16.5', 
     protocolVersion: 754, 
